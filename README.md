@@ -1,53 +1,53 @@
 # Multimodal Invoice Extractor
 
-A multimodal AI application that extracts information from invoice images and allows users to ask questions about the uploaded invoice using natural language.
+A Streamlit-based multimodal AI application that uses Google Gemini to analyze invoice images and answer user queries based on the uploaded invoice.
 
 ## Overview
 
-The Multimodal Invoice Extractor simplifies the process of understanding and querying information from invoices.
+The Multimodal Invoice Extractor allows users to upload an invoice image and ask questions about its contents using natural language.
 
-Users can upload an invoice image and interact with it through natural-language queries. The application processes the visual content of the invoice and generates responses based on the information available in the uploaded document.
+The application uses the Gemini 2.5 Flash multimodal model to process the uploaded invoice image along with the user's question. Gemini analyzes the visual information in the invoice and generates a response based on the provided image.
 
-This project demonstrates the use of multimodal AI for document understanding and question answering, with a focus on extracting meaningful information from visually structured documents such as invoices.
+This project demonstrates how multimodal generative AI can be used for document understanding and image-based question answering.
 
-## Key Features
+## Features
 
-- Upload invoice images through a simple interface
-- Process and understand information contained in invoice images
-- Ask natural-language questions about the uploaded invoice
-- Generate responses based on the contents of the invoice
-- Extract information such as invoice numbers, dates, items, quantities, prices, taxes, and totals
-- Provide an interactive document question-answering experience
+- Upload invoice images in JPG, JPEG, or PNG format
+- Preview the uploaded invoice
+- Ask natural-language questions about the invoice
+- Analyze invoice images using Google Gemini
+- Generate responses based on the uploaded invoice
+- Simple and interactive Streamlit interface
 
 ## How It Works
 
 ```text
-Upload Invoice Image
-        |
-        v
-Image Processing
-        |
-        v
-Multimodal AI Model
-        |
-        v
-Understand Invoice Content
-        |
-        v
-User Query
-        |
-        v
-Generate Context-Based Response
+User
+ |
+ | Upload Invoice Image
+ v
+Streamlit Application
+ |
+ | Convert Image to Bytes
+ v
+Gemini 2.5 Flash
+ |
+ | Analyze Image + User Query
+ v
+Generated Response
+ |
+ v
+Display Answer in Streamlit
 ```
 
 ### Workflow
 
-1. The user uploads an invoice image.
-2. The application processes the uploaded image.
-3. The multimodal AI model analyzes the visual and textual information present in the invoice.
-4. The user enters a question related to the invoice.
-5. The application uses the invoice information to generate a relevant response.
-6. The response is displayed through the application interface.
+1. The user enters a question in the input field.
+2. The user uploads an invoice image.
+3. The application reads the uploaded image and converts it into byte data.
+4. The image data is passed to the Gemini 2.5 Flash multimodal model.
+5. Gemini analyzes the invoice image along with the user's question.
+6. The generated response is displayed in the Streamlit application.
 
 ## Example Queries
 
@@ -60,25 +60,30 @@ What is the total amount?
 
 What is the invoice date?
 
-Who is the vendor?
+Who is the seller?
 
-What items are included in the invoice?
+Who is the customer?
 
-What is the quantity of each item?
+What items are listed in the invoice?
 
-What is the total tax amount?
+What is the price of each item?
 
-What is the price of a particular item?
+What is the total tax?
+
+What is the billing address?
 ```
+
+The model generates answers based on the information visible in the uploaded invoice.
 
 ## Technologies Used
 
 - Python
 - Streamlit
-- Multimodal AI
-- Image Processing
-- Natural Language Processing
-- Large Language Models
+- Google Gemini API
+- Gemini 2.5 Flash
+- Google Generative AI Python SDK
+- python-dotenv
+- Pillow
 
 ## Project Structure
 
@@ -87,22 +92,42 @@ Invoice_extractor/
 │
 ├── app.py
 ├── requirements.txt
-├── README.md
+├── .env
 ├── .gitignore
-└── .vscode/
+└── README.md
 ```
 
 ### `app.py`
 
-Contains the main application logic, including the user interface, invoice image handling, model interaction, and question-answering workflow.
+Contains the complete Streamlit application, including:
+
+- Streamlit user interface
+- Invoice image upload
+- Image processing
+- Gemini model configuration
+- User query handling
+- Response generation
+- Display of the generated response
 
 ### `requirements.txt`
 
-Contains the Python dependencies required to run the application.
+Contains the Python packages required to run the application.
+
+### `.env`
+
+Stores the Google Gemini API key used by the application.
+
+Example:
+
+```env
+GOOGLE_API_KEY=your_google_api_key
+```
+
+The `.env` file should not be uploaded to GitHub.
 
 ### `.gitignore`
 
-Specifies files and directories that should not be committed to the repository.
+Used to prevent sensitive files such as `.env` and unnecessary local files from being committed to the repository.
 
 ## Installation
 
@@ -144,65 +169,132 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Configuration
+## API Key Configuration
 
-If the application requires an API key for the multimodal AI model, create a `.env` file in the project directory and add the required credentials.
+The application requires a Google Gemini API key.
 
-Example:
+Create a `.env` file in the project root directory:
 
 ```env
-API_KEY=your_api_key_here
+GOOGLE_API_KEY=your_google_api_key
 ```
 
-Do not commit API keys or other sensitive credentials to the repository.
+The application loads the API key using `python-dotenv`:
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
+```
+
+The key is then used to configure the Gemini API:
+
+```python
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+```
+
+Do not expose or commit your API key to the repository.
 
 ## Running the Application
 
-Start the Streamlit application using:
+Run the Streamlit application using:
 
 ```bash
 streamlit run app.py
 ```
 
-The application will open in the browser and provide an interface for uploading an invoice and asking questions about it.
+After running the command, open the Streamlit URL displayed in the terminal.
 
-## Use Cases
+## Application Components
 
-The application can be useful for:
+### Gemini Model
 
-- Automated invoice analysis
-- Financial document processing
-- Invoice information extraction
-- Accounts payable workflows
-- Document question answering
-- Business document automation
-- Reducing manual invoice review
+The project uses:
 
-## Project Objective
+```python
+model = genai.GenerativeModel('gemini-2.5-flash')
+```
 
-The main objective of this project is to explore how multimodal AI can be applied to real-world document processing tasks.
+Gemini 2.5 Flash is used because it supports multimodal input, allowing the application to provide an invoice image together with a text query.
 
-Invoices often contain a combination of text, tables, numbers, layouts, and visual elements. Traditional text-based approaches may not fully capture this information. This project demonstrates how multimodal AI can be used to understand invoice content and provide answers to user queries.
+### Image Processing
+
+The uploaded invoice is converted into byte data before being sent to Gemini:
+
+```python
+byte_data = uploaded_file.getvalue()
+```
+
+The application then creates an image object containing the MIME type and image data:
+
+```python
+img_parts = [
+    {
+        "mime_type": uploaded_file.type,
+        "data": byte_data
+    }
+]
+```
+
+### Multimodal Question Answering
+
+The application sends the invoice image and prompt to Gemini:
+
+```python
+response = model.generate_content([input, image[0], prompt])
+```
+
+This allows the model to consider both the invoice image and the user's query when generating the response.
+
+## System Prompt
+
+The application provides Gemini with the following instruction:
+
+```text
+You are an expert in understanding invoices. We will upload an image as invoice
+and you'll have to answer any questions based on the uploaded invoice image.
+```
+
+This guides the model to focus its response on the information available in the uploaded invoice.
+
+## Limitations
+
+This project currently focuses on image-based invoice question answering.
+
+Current limitations include:
+
+- Supports invoice images rather than PDF documents
+- Does not store extracted invoice information in a database
+- Does not maintain conversation history
+- Does not perform structured invoice data export
+- Responses depend on the information visible in the uploaded image
+- The application requires access to the Gemini API
+- The quality of responses may depend on the image quality and invoice layout
 
 ## Future Improvements
 
-- Support for multiple invoice formats
-- Batch invoice processing
-- Structured JSON extraction
-- Automatic invoice field validation
-- Invoice comparison
-- Export extracted information to CSV or Excel
+Potential improvements include:
+
 - Support for PDF invoices
+- Structured extraction of invoice fields
+- Export extracted data to CSV or Excel
 - Conversation history
-- Improved handling of complex invoice layouts
-- Integration with accounting and business systems
+- Multiple invoice comparison
+- Batch invoice processing
+- Invoice validation
+- Improved error handling
+- Support for additional document formats
+- Deployment as a public web application
+
+## Project Objective
+
+The objective of this project is to explore the practical use of multimodal generative AI for understanding real-world business documents.
+
+By combining Streamlit with Google's Gemini multimodal model, the application provides a simple interface where users can upload an invoice and interact with its contents using natural-language questions.
 
 ## Author
 
 **Sapthasree N K**
 
 GitHub: https://github.com/sapthasree
-
-## Repository
 
 https://github.com/sapthasree/Invoice_extractor
